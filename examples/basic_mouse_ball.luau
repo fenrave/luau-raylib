@@ -15,7 +15,7 @@ lib.InitWindow(screenWidth, screenHeight, "ZUNE + Raylib");
 
 lib.SetTargetFPS(240);
 
-local pos = structs.Vector2:new{ x = 0, y = 0 };
+local pos: raylib.Vector2 = vector.zero;
 
 local bgColor = structs.Color:new({ r = 16, g = 16, b = 16, a = 255 });
 

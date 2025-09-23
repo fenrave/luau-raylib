@@ -9,26 +9,11 @@ local uint = ffi.types.u32;
 local bool = ffi.types.u8;
 local float = ffi.types.float;
 
-local function array(t: any, n: number): FFIStructureType
-    local fields = {};
-    for i = 1, n do
-        table.insert(fields, { [`_{i}`] = t });
-    end
-    return ffi.struct(fields);
-end
+local Vector2 = ffi.types.vector2_32;
+export type Vector2 = vector;
 
-local Vector2 = ffi.struct({
-    { x = float },
-    { y = float },
-});
-export type Vector2 = typeof(Vector2:new({}))
-
-local Vector3 = ffi.struct({
-    { x = float },
-    { y = float },
-    { z = float },
-});
-export type Vector3 = typeof(Vector3:new({}))
+local Vector3 = ffi.types.vector3_32;
+export type Vector3 = vector;
 
 local Vector4 = ffi.struct({
     { x = float },
@@ -197,7 +182,7 @@ local Transform = ffi.struct({
 export type Transform = typeof(Transform:new({}))
 
 local BoneInfo = ffi.struct({
-    { name = array(ffi.types.u8, 32) },
+    { name = ffi.types.u8:array(32) },
     { parent = int },
 });
 export type BoneInfo = typeof(BoneInfo:new({}))
@@ -220,7 +205,7 @@ local ModelAnimation = ffi.struct({
     { frameCount = int },
     { bones = ffi.types.pointer },
     { framePoses = ffi.types.pointer },
-    { name = array(ffi.types.u8, 32) },
+    { name = ffi.types.u8:array(32) },
 });
 export type ModelAnimation = typeof(ModelAnimation:new({}))
 

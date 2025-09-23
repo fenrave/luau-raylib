@@ -31,7 +31,7 @@ local BOTTOM_HEIGHT   =  0.5
 
 local NORMALIZE_INPUT = 0
 
-local sensitivity = structs.Vector2:new{ x = 0.01, y = 0.01 };
+local sensitivity: raylib.Vector2 = vector.create(0.01, 0.01)
 
 type Body = {
     position: raylib.Vector3,
@@ -40,47 +40,29 @@ type Body = {
     isGrounded: boolean,
 }
 local player: Body = {
-    position = structs.Vector3:new{ x = 0.0, y = 2.0, z = 0.0 },
-    velocity = structs.Vector3:new{ x = 0.0, y = 0.0, z = 0.0 },
-    dir = structs.Vector3:new{ x = 0.0, y = 0.0, z = 0.0 },
+    position = vector.create(0.0, 2.0, 0.0),
+    velocity = vector.zero,
+    dir = vector.zero,
     isGrounded = false,
 }
-local lookRotation = structs.Vector2:new{ x = 0.0, y = 0.0 };
+local lookRotation: raylib.Vector2 = vector.zero;
 local headTimer = 0.0;
 local walkLerp = 0.0;
 local headLerp = STAND_HEIGHT;
-local lean = structs.Vector2:new{ x = 0.0, y = 0.0 };
+local lean: raylib.Vector2 = vector.zero;
 
-local function fromVector3(v: raylib.Vector3): vector
-    return vector.create(buffer.readf32(v, 0), buffer.readf32(v, 4), buffer.readf32(v, 8));
-end
-
-local function toVector3(v: vector): raylib.Vector3
-    return structs.Vector3:new{ x = v.x, y = v.y, z = v.z };
-end
-
-local function Vector3Angle(a: raylib.Vector3 | vector, b: raylib.Vector3 | vector): number
-    local v1: vector = if (type(a) == "buffer") then fromVector3(a) else a;
-    local v2: vector = if (type(b) == "buffer") then fromVector3(b) else b;
-
-    return vector.angle(v1, v2);
-end
-
-local function Vector3RotateByAxisAngle(vec: raylib.Vector3, axis: raylib.Vector3, angle: number): raylib.Vector3
-    local v = fromVector3(vec);
-    local ax = fromVector3(axis);
-
-    local length = math.sqrt(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
+local function Vector3RotateByAxisAngle(v: raylib.Vector3, axis: raylib.Vector3, angle: number): raylib.Vector3
+    local length = vector.magnitude(axis);
     if (length == 0.0) then
         length = 1.0;
     end
     local ilength = 1.0 / length;
 
-    ax *= vector.create(ilength, ilength, ilength);
+    axis *= vector.create(ilength, ilength, ilength);
 
     angle /= 2.0;
     local a = math.sin(angle);
-    local w = vector.create(ax.x * a, ax.y * a, ax.z * a);
+    local w = vector.create(axis.x * a, axis.y * a, axis.z * a);
     a = math.cos(angle);
 
     local wv = vector.create(w.y*v.z - w.z*v.y, w.z*v.x - w.x*v.z, w.x*v.y - w.y*v.x);
@@ -91,7 +73,7 @@ local function Vector3RotateByAxisAngle(vec: raylib.Vector3, axis: raylib.Vector
 
     wwv *= 2.0;
 
-    return toVector3(v + wv + wwv);
+    return v + wv + wwv;
 end
 
 local function vectorlerp(a: vector, b: vector, t: number): vector
@@ -111,11 +93,11 @@ local function UpdateBody(body: Body, rot: number, side: number, forward: number
     local delta = lib.GetFrameTime();
 
     if (not body.isGrounded) then
-        buffer.writef32(body.velocity, 4, buffer.readf32(body.velocity, 4) - GRAVITY * delta);
+        body.velocity -= vector.create(0.0, GRAVITY * delta, 0.0);
     end
 
     if (body.isGrounded and jumpPressed) then
-        buffer.writef32(body.velocity, 4, JUMP_FORCE);
+        body.velocity += vector.create(0.0, JUMP_FORCE, 0.0);
         body.isGrounded = false;
 
         -- Sound can be played at this moment
@@ -127,10 +109,10 @@ local function UpdateBody(body: Body, rot: number, side: number, forward: number
     local right = vector.create(math.cos(-rot), 0.0, math.sin(-rot));
 
     local desiredDir = vector.create(input.x*right.x + input.y*front.x, 0.0, input.x*right.z + input.y*front.z);
-    buffer.copy(body.dir, 0, toVector3(vectorlerp(fromVector3(body.dir), desiredDir, CONTROL * delta)), 0, 12);
+    body.dir = vectorlerp(body.dir, desiredDir, CONTROL * delta);
 
     local decel = if (body.isGrounded) then FRICTION else AIR_DRAG;
-    local hvel = vector.create(buffer.readf32(body.velocity, 0) * decel, 0.0, buffer.readf32(body.velocity, 8) * decel);
+    local hvel = body.velocity * vector.create(decel, 0.0, decel);
 
     local hvelLength = vector.magnitude(hvel); -- Magnitude
     if (hvelLength < (MAX_SPEED * 0.01)) then
@@ -138,60 +120,55 @@ local function UpdateBody(body: Body, rot: number, side: number, forward: number
     end
 
     -- This is what creates strafing
-    local speed = vector.dot(hvel, fromVector3(body.dir));
+    local speed = vector.dot(hvel, body.dir);
 
     -- Whenever the amount of acceleration to add is clamped by the maximum acceleration constant,
     -- a Player can make the speed faster by bringing the direction closer to horizontal velocity angle
     -- More info here: https://youtu.be/v3zT3Z5apaM?t=165
     local maxSpeed = if (crouchHold) then CROUCH_SPEED else MAX_SPEED;
     local accel = math.clamp(maxSpeed - speed, 0.0, MAX_ACCEL * delta);
-    hvel += vector.create(buffer.readf32(body.dir, 0) * accel, 0.0, buffer.readf32(body.dir, 8) * accel);
+    hvel += body.dir * vector.create(accel, 0.0, accel);
 
-    buffer.writef32(body.velocity, 0, hvel.x);
-    buffer.writef32(body.velocity, 8, hvel.z);
+    body.velocity = vector.create(hvel.x, body.velocity.y, hvel.z);
 
-    buffer.writef32(body.position, 0, buffer.readf32(body.position, 0) + buffer.readf32(body.velocity, 0) * delta);
-    buffer.writef32(body.position, 4, buffer.readf32(body.position, 4) + buffer.readf32(body.velocity, 4) * delta);
-    buffer.writef32(body.position, 8, buffer.readf32(body.position, 8) + buffer.readf32(body.velocity, 8) * delta);
+    body.position += body.velocity * delta;
 
     -- Fancy collision system against the floor
-    if (buffer.readf32(body.position, 4) <= 0.0) then
-        buffer.writef32(body.position, 4, 0.0);
-        buffer.writef32(body.velocity, 4, 0.0);
+    if (body.position.y <= 0.0) then
+        body.position *= vector.create(1.0, 0.0, 1.0);
+        body.velocity *= vector.create(1.0, 0.0, 1.0);
         body.isGrounded = true; -- Enable jumping
     end
 end
 
 local function UpdateCameraFPS(camera: raylib.Camera3D)
-    local up = structs.Vector3:new{ x = 0.0, y = 1.0, z = 0.0 };
-    local targetOffset = structs.Vector3:new{ x = 0.0, y = 0.0, z = -1.0 };
+    local up = vector.create(0.0, 1.0, 0.0);
+    local targetOffset = vector.create(0.0, 0.0, -1.0);
 
     -- Left and right
-    local yaw = Vector3RotateByAxisAngle(targetOffset, up, buffer.readf32(lookRotation, 0));
+    local yaw = Vector3RotateByAxisAngle(targetOffset, up, lookRotation.x);
 
     -- Clamp view up
-    local maxAngleUp = Vector3Angle(up, yaw);
+    local maxAngleUp = vector.angle(up, yaw);
     maxAngleUp -= 0.001; -- Avoid numerical errors
-    if ( -(buffer.readf32(lookRotation, 4)) > maxAngleUp) then
-        buffer.writef32(lookRotation, 4, -maxAngleUp);
+    if ( -lookRotation.y > maxAngleUp) then
+        lookRotation = vector.create(lookRotation.x, -maxAngleUp, lookRotation.z);
     end
 
     -- Clamp view down
-    local maxAngleDown = Vector3Angle(-fromVector3(up), yaw);
+    local maxAngleDown = vector.angle(-up, yaw);
     maxAngleDown *= -1.0; -- Downwards angle is negative
     maxAngleDown += 0.001; -- Avoid numerical errors
-    if ( -(buffer.readf32(lookRotation, 4)) < maxAngleDown) then
-        buffer.writef32(lookRotation, 4, -maxAngleDown);
+    if ( -lookRotation.y < maxAngleDown) then
+        lookRotation = vector.create(lookRotation.x, -maxAngleDown, lookRotation.z);
     end
 
     -- Up and down
-    local right: raylib.Vector3; do
-        local r = vector.cross(fromVector3(yaw), fromVector3(up));
-        right = toVector3(vector.normalize(r));
-    end
+    local right: raylib.Vector3 = vector.cross(yaw, up);
+    right = vector.normalize(right);
 
     -- Rotate view vector around right axis
-    local pitchAngle = -buffer.readf32(lookRotation, 4) - buffer.readf32(lean, 4);
+    local pitchAngle = -lookRotation.y - lean.y;
     pitchAngle = math.clamp(pitchAngle, -math.pi/2 + 0.0001, math.pi/2 - 0.0001); -- Clamp angle so it doesn't go past straight up or straight down
     local pitch = Vector3RotateByAxisAngle(yaw, right, pitchAngle);
 
@@ -200,21 +177,19 @@ local function UpdateCameraFPS(camera: raylib.Camera3D)
     local headSin = math.sin(headTimer*math.pi);
     local headCos = math.cos(headTimer*math.pi);
     local stepRotation = 0.01;
-    buffer.copy(camera, 24, Vector3RotateByAxisAngle(up, pitch, headSin*stepRotation + buffer.readf32(lean, 0)), 0, 12);
+    zune.mem.writeVector3(camera, 24, Vector3RotateByAxisAngle(up, pitch, headSin*stepRotation + lean.x));
 
     -- Camera BOB
     local bobSide = 0.1;
     local bobUp = 0.15;
-    local rightVec = fromVector3(right);
-    local bobbing = rightVec * (headSin * bobSide);
+    local bobbing = right * (headSin * bobSide);
     bobbing = vector.create(bobbing.x, math.abs(headCos*bobUp), bobbing.z);
 
-    local camera_pos = structs.Vector3:new{ x = 0.0, y = 0.0, z = 0.0 };
-    buffer.copy(camera_pos, 0, camera, 0, 12);
+    local camera_pos = zune.mem.toVector3(camera, 0);
 
-    local camera_target_vec = fromVector3(camera_pos) + bobbing * walkLerp;
-    buffer.copy(camera, 0, toVector3(camera_target_vec), 0, 12);
-    buffer.copy(camera, 12, toVector3(camera_target_vec + fromVector3(pitch)), 0, 12);
+    local camera_target_vec = camera_pos + bobbing * walkLerp;
+    zune.mem.writeVector3(camera, 0, camera_target_vec);
+    zune.mem.writeVector3(camera, 12, camera_target_vec + pitch);
 end
 
 local function DrawLevel()
@@ -226,34 +201,34 @@ local function DrawLevel()
     for y = -floorExtent, floorExtent - 1 do
         for x = -floorExtent, floorExtent - 1 do
             if (bit32.band(y, 1) ~= 0 and bit32.band(x, 1) ~= 0) then
-                lib.DrawPlane(structs.Vector3:new{ x = x * tileSize, y = 0.0, z = y * tileSize }, structs.Vector2:new{ x = tileSize, y = tileSize }, tileColor1);
+                lib.DrawPlane(vector.create(x * tileSize, 0.0, y * tileSize), vector.create(tileSize, tileSize), tileColor1);
             elseif (bit32.band(y, 1) == 0 and bit32.band(x, 1) == 0) then
-                lib.DrawPlane(structs.Vector3:new{ x = x * tileSize, y = 0.0, z = y * tileSize }, structs.Vector2:new{ x = tileSize, y = tileSize }, const.LIGHTGRAY);
+                lib.DrawPlane(vector.create(x * tileSize, 0.0, y * tileSize), vector.create(tileSize, tileSize), const.LIGHTGRAY);
             end
         end
     end
 
-    local towerSize = structs.Vector3:new{ x = 16.0, y = 32.0, z = 16.0 };
+    local towerSize = vector.create(16.0, 32.0, 16.0);
     local towerColor = structs.Color:new({ r = 150, g = 200, b = 200, a = 255 });
 
-    local towerPos = structs.Vector3:new{ x = 16.0, y = 16.0, z = 16.0 };
+    local towerPos = vector.create(16.0, 16.0, 16.0);
     lib.DrawCubeV(towerPos, towerSize, towerColor);
     lib.DrawCubeWiresV(towerPos, towerSize, const.DARKBLUE);
 
-    buffer.writef32(towerPos, 0, buffer.readf32(towerPos, 0) * -1);
+    towerPos *= vector.create(-1.0, 1.0, 1.0);
     lib.DrawCubeV(towerPos, towerSize, towerColor);
     lib.DrawCubeWiresV(towerPos, towerSize, const.DARKBLUE);
-
-    buffer.writef32(towerPos, 8, buffer.readf32(towerPos, 8) * -1);
+    
+    towerPos *= vector.create(1.0, 1.0, -1.0);
     lib.DrawCubeV(towerPos, towerSize, towerColor);
     lib.DrawCubeWiresV(towerPos, towerSize, const.DARKBLUE);
-
-    buffer.writef32(towerPos, 0, buffer.readf32(towerPos, 0) * -1);
+    
+    towerPos *= vector.create(-1.0, 1.0, 1.0);
     lib.DrawCubeV(towerPos, towerSize, towerColor);
     lib.DrawCubeWiresV(towerPos, towerSize, const.DARKBLUE);
 
     -- Red sun
-    lib.DrawSphere(structs.Vector3:new{ x = 300.0, y = 300.0, z = 0.0 }, 100.0, structs.Color:new({ r = 255, g = 0, b = 0, a = 255 }));
+    lib.DrawSphere(vector.create(300.0, 300.0, 0), 100.0, structs.Color:new({ r = 255, g = 0, b = 0, a = 255 }));
 end
 
 lib.InitWindow(screenWidth, screenHeight, "ZUNE + Raylib - 3d camera fps example");
@@ -262,13 +237,9 @@ lib.SetTargetFPS(60);
 
 local fovy = 60.0;
 local camera = structs.Camera3D:new{
-    position = structs.Vector3:new{ 
-        x = buffer.readf32(player.position, 0),
-        y = buffer.readf32(player.position, 4) + (BOTTOM_HEIGHT + headLerp),
-        z = buffer.readf32(player.position, 8),
-    },
-    target = structs.Vector3:new{ x = 0.0, y = 2.0, z = 0.0 },
-    up = structs.Vector3:new{ x = 0.0, y = 1.0, z = 0.0 },
+    position = player.position + vector.create(0.0, BOTTOM_HEIGHT + headLerp, 0.0),
+    target = vector.create(0.0, 2.0, 0.0),
+    up = vector.create(0.0, 1.0, 0.0),
     fovy = fovy,
     projection = const.CameraProjection.CAMERA_PERSPECTIVE,
 };
@@ -279,21 +250,16 @@ lib.DisableCursor();
 
 while lib.WindowShouldClose() == 0 do
     local mouseDelta = lib.GetMouseDelta();
-    buffer.writef32(lookRotation, 0, buffer.readf32(lookRotation, 0) - buffer.readf32(mouseDelta, 0) * buffer.readf32(sensitivity, 0));
-    buffer.writef32(lookRotation, 4, buffer.readf32(lookRotation, 4) + buffer.readf32(mouseDelta, 4) * buffer.readf32(sensitivity, 4));
+    lookRotation += vector.create(-mouseDelta.x * sensitivity.x, mouseDelta.y * sensitivity.y);
 
     local sideway = lib.IsKeyDown(const.KeyboardKey.KEY_D) - lib.IsKeyDown(const.KeyboardKey.KEY_A);
     local forward = lib.IsKeyDown(const.KeyboardKey.KEY_W) - lib.IsKeyDown(const.KeyboardKey.KEY_S);
     local crouching = lib.IsKeyDown(const.KeyboardKey.KEY_LEFT_CONTROL) ~= 0;
-    UpdateBody(player, buffer.readf32(lookRotation, 0), sideway, forward, lib.IsKeyPressed(const.KeyboardKey.KEY_SPACE) ~= 0, crouching);
+    UpdateBody(player, lookRotation.x, sideway, forward, lib.IsKeyPressed(const.KeyboardKey.KEY_SPACE) ~= 0, crouching);
 
     local delta = lib.GetFrameTime();
     headLerp = math.lerp(headLerp, if (crouching) then CROUCH_HEIGHT else STAND_HEIGHT, 20.0 * delta);
-    buffer.copy(camera, 0, structs.Vector3:new{
-        x = buffer.readf32(player.position, 0),
-        y = buffer.readf32(player.position, 4) + (BOTTOM_HEIGHT + headLerp),
-        z = buffer.readf32(player.position, 8),
-    }, 0, 12);
+    zune.mem.writeVector3(camera, 0, player.position + vector.create(0.0, BOTTOM_HEIGHT + headLerp, 0.0));
 
     if (player.isGrounded and (forward ~= 0 or sideway ~= 0)) then
         headTimer += delta * 3.0;
