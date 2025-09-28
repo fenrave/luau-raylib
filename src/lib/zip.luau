@@ -14,14 +14,14 @@ function zip.is(buf: buffer): boolean
     if len < 22 then
         return false;
     end
-    return mem.indexOfPos(buf, len - 22, EOCD_SIGNATURE) ~= nil
+    return mem.findPos(buf, len - 22, EOCD_SIGNATURE) ~= nil
 end
 
 function zip.read(buf: buffer): { [string]: buffer }
     local len = buffer.len(buf);
     local files: { [string]: buffer } = {};
 
-    local eocd_offset: number? = mem.indexOfPos(buf, len - 22, EOCD_SIGNATURE);
+    local eocd_offset: number? = mem.findPos(buf, len - 22, EOCD_SIGNATURE);
     if (not eocd_offset) then
         error("Invalid ZIP file", 0);
     end

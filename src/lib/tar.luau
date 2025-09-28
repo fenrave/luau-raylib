@@ -9,7 +9,7 @@ local function spanstring(buf: buffer, offset: number, max: number): string
         buf,
         offset,
         math.min(
-            (zune.mem.indexOfScalarPos(buf, offset, 0) or offset + max) - offset,
+            (zune.mem.findScalarPos(buf, offset, 0) or offset + max) - offset,
             max
         )
     );
