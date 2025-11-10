@@ -590,6 +590,159 @@ local export = {
         GAMEPAD_AXIS_RIGHT_TRIGGER = 5      -- Gamepad back trigger right, pressure level: [1..-1]
     },
 
+    MaterialMapIndex = {
+        MATERIAL_MAP_ALBEDO = 0,            -- Albedo material (same as: MATERIAL_MAP_DIFFUSE)
+        MATERIAL_MAP_METALNESS = 1,         -- Metalness material (same as: MATERIAL_MAP_SPECULAR)
+        MATERIAL_MAP_NORMAL = 2,            -- Normal material
+        MATERIAL_MAP_ROUGHNESS = 3,         -- Roughness material
+        MATERIAL_MAP_OCCLUSION = 4,         -- Ambient occlusion material
+        MATERIAL_MAP_EMISSION = 5,          -- Emission material
+        MATERIAL_MAP_HEIGHT = 6,            -- Heightmap material
+        MATERIAL_MAP_CUBEMAP = 7,           -- Cubemap material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
+        MATERIAL_MAP_IRRADIANCE = 8,        -- Irradiance material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
+        MATERIAL_MAP_PREFILTER = 9,         -- Prefilter material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
+        MATERIAL_MAP_BRDF = 10,             -- Brdf material
+
+        MATERIAL_MAP_DIFFUSE = 0, -- =MATERIAL_MAP_ALBEDO
+        MATERIAL_MAP_SPECULAR = 1, -- =MATERIAL_MAP_METALNESS
+    },
+
+    ShaderLocationIndex = {
+        SHADER_LOC_VERTEX_POSITION = 0,      -- Shader location: vertex attribute: position
+        SHADER_LOC_VERTEX_TEXCOORD01 = 1,    -- Shader location: vertex attribute: texcoord01
+        SHADER_LOC_VERTEX_TEXCOORD02 = 2,    -- Shader location: vertex attribute: texcoord02
+        SHADER_LOC_VERTEX_NORMAL = 3,        -- Shader location: vertex attribute: normal
+        SHADER_LOC_VERTEX_TANGENT = 4,       -- Shader location: vertex attribute: tangent
+        SHADER_LOC_VERTEX_COLOR = 5,         -- Shader location: vertex attribute: color
+        SHADER_LOC_MATRIX_MVP = 6,           -- Shader location: matrix uniform: model-view-projection
+        SHADER_LOC_MATRIX_VIEW = 7,          -- Shader location: matrix uniform: view (camera transform)
+        SHADER_LOC_MATRIX_PROJECTION = 8,    -- Shader location: matrix uniform: projection
+        SHADER_LOC_MATRIX_MODEL = 9,         -- Shader location: matrix uniform: model (transform)
+        SHADER_LOC_MATRIX_NORMAL = 10,       -- Shader location: matrix uniform: normal
+        SHADER_LOC_VECTOR_VIEW = 11,         -- Shader location: vector uniform: view
+        SHADER_LOC_COLOR_DIFFUSE = 12,       -- Shader location: vector uniform: diffuse color
+        SHADER_LOC_COLOR_SPECULAR = 13,      -- Shader location: vector uniform: specular color
+        SHADER_LOC_COLOR_AMBIENT = 14,       -- Shader location: vector uniform: ambient color
+        SHADER_LOC_MAP_ALBEDO = 15,          -- Shader location: sampler2d texture: albedo (same as: SHADER_LOC_MAP_DIFFUSE)
+        SHADER_LOC_MAP_METALNESS = 16,       -- Shader location: sampler2d texture: metalness (same as: SHADER_LOC_MAP_SPECULAR)
+        SHADER_LOC_MAP_NORMAL = 17,          -- Shader location: sampler2d texture: normal
+        SHADER_LOC_MAP_ROUGHNESS = 18,       -- Shader location: sampler2d texture: roughness
+        SHADER_LOC_MAP_OCCLUSION = 19,       -- Shader location: sampler2d texture: occlusion
+        SHADER_LOC_MAP_EMISSION = 20,        -- Shader location: sampler2d texture: emission
+        SHADER_LOC_MAP_HEIGHT = 21,          -- Shader location: sampler2d texture: height
+        SHADER_LOC_MAP_CUBEMAP = 22,         -- Shader location: samplerCube texture: cubemap
+        SHADER_LOC_MAP_IRRADIANCE = 23,      -- Shader location: samplerCube texture: irradiance
+        SHADER_LOC_MAP_PREFILTER = 24,       -- Shader location: samplerCube texture: prefilter
+        SHADER_LOC_MAP_BRDF = 25,            -- Shader location: sampler2d texture: brdf
+        SHADER_LOC_VERTEX_BONEIDS = 26,      -- Shader location: vertex attribute: boneIds
+        SHADER_LOC_VERTEX_BONEWEIGHTS = 27,  -- Shader location: vertex attribute: boneWeights
+        SHADER_LOC_BONE_MATRICES = 28,       -- Shader location: array of matrices uniform: boneMatrices
+
+        SHADER_LOC_MAP_DIFFUSE = 15,    -- =SHADER_LOC_MAP_ALBEDO
+        SHADER_LOC_MAP_SPECULAR = 16    -- =SHADER_LOC_MAP_METALNESS
+    },
+
+    ShaderUniformDataType = {
+        SHADER_UNIFORM_FLOAT = 0,           -- Shader uniform type: float
+        SHADER_UNIFORM_VEC2 = 1,            -- Shader uniform type: vec2 (2 float)
+        SHADER_UNIFORM_VEC3 = 2,            -- Shader uniform type: vec3 (3 float)
+        SHADER_UNIFORM_VEC4 = 3,            -- Shader uniform type: vec4 (4 float)
+        SHADER_UNIFORM_INT = 4,             -- Shader uniform type: int
+        SHADER_UNIFORM_IVEC2 = 5,           -- Shader uniform type: ivec2 (2 int)
+        SHADER_UNIFORM_IVEC3 = 6,           -- Shader uniform type: ivec3 (3 int)
+        SHADER_UNIFORM_IVEC4 = 7,           -- Shader uniform type: ivec4 (4 int)
+        SHADER_UNIFORM_SAMPLER2D = 8        -- Shader uniform type: sampler2d
+    },
+
+    ShaderAttributeDataType = {
+        SHADER_ATTRIB_FLOAT = 0,            -- Shader attribute type: float
+        SHADER_ATTRIB_VEC2 = 1,             -- Shader attribute type: vec2 (2 float)
+        SHADER_ATTRIB_VEC3 = 2,             -- Shader attribute type: vec3 (3 float)
+        SHADER_ATTRIB_VEC4 = 3              -- Shader attribute type: vec4 (4 float)
+    },
+
+    PixelFormat = {
+        PIXELFORMAT_UNCOMPRESSED_GRAYSCALE = 1,      -- 8 bit per pixel (no alpha)
+        PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA = 2,     -- 8*2 bpp (2 channels)
+        PIXELFORMAT_UNCOMPRESSED_R5G6B5 = 3,         -- 16 bpp
+        PIXELFORMAT_UNCOMPRESSED_R8G8B8 = 4,         -- 24 bpp
+        PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 = 5,       -- 16 bpp (1 bit alpha)
+        PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 = 6,       -- 16 bpp (4 bit alpha)
+        PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 = 7,       -- 32 bpp
+        PIXELFORMAT_UNCOMPRESSED_R32 = 8,            -- 32 bpp (1 channel - float)
+        PIXELFORMAT_UNCOMPRESSED_R32G32B32 = 9,      -- 32*3 bpp (3 channels - float)
+        PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 = 10,  -- 32*4 bpp (4 channels - float)
+        PIXELFORMAT_UNCOMPRESSED_R16 = 11,           -- 16 bpp (1 channel - half float)
+        PIXELFORMAT_UNCOMPRESSED_R16G16B16 = 12,     -- 16*3 bpp (3 channels - half float)
+        PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 = 13,  -- 16*4 bpp (4 channels - half float)
+        PIXELFORMAT_COMPRESSED_DXT1_RGB = 14,        -- 4 bpp (no alpha)
+        PIXELFORMAT_COMPRESSED_DXT1_RGBA = 15,       -- 4 bpp (1 bit alpha)
+        PIXELFORMAT_COMPRESSED_DXT3_RGBA = 16,       -- 8 bpp
+        PIXELFORMAT_COMPRESSED_DXT5_RGBA = 17,       -- 8 bpp
+        PIXELFORMAT_COMPRESSED_ETC1_RGB = 18,        -- 4 bpp
+        PIXELFORMAT_COMPRESSED_ETC2_RGB = 19,        -- 4 bpp
+        PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA = 20,   -- 8 bpp
+        PIXELFORMAT_COMPRESSED_PVRT_RGB = 21,        -- 4 bpp
+        PIXELFORMAT_COMPRESSED_PVRT_RGBA = 22,       -- 4 bpp
+        PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA = 23,   -- 8 bpp
+        PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA = 24    -- 2 bpp
+    },
+
+    TextureFilter = {
+        TEXTURE_FILTER_POINT = 0,                   -- No filter, just pixel approximation
+        TEXTURE_FILTER_BILINEAR = 1,                -- Linear filtering
+        TEXTURE_FILTER_TRILINEAR = 2,               -- Trilinear filtering (linear with mipmaps)
+        TEXTURE_FILTER_ANISOTROPIC_4X = 3,          -- Anisotropic filtering 4x
+        TEXTURE_FILTER_ANISOTROPIC_8X = 4,          -- Anisotropic filtering 8x
+        TEXTURE_FILTER_ANISOTROPIC_16X = 5,         -- Anisotropic filtering 16x
+    },
+
+    TextureWrap = {
+        TEXTURE_WRAP_REPEAT = 0,                    -- Repeats texture in tiled mode
+        TEXTURE_WRAP_CLAMP = 1,                     -- Clamps texture to edge pixel in tiled mode
+        TEXTURE_WRAP_MIRROR_REPEAT = 2,             -- Mirrors and repeats the texture in tiled mode
+        TEXTURE_WRAP_MIRROR_CLAMP = 3               -- Mirrors and clamps to border the texture in tiled mode
+    },
+
+    CubemapLayout = {
+        CUBEMAP_LAYOUT_AUTO_DETECT = 0,             -- Automatically detect layout type
+        CUBEMAP_LAYOUT_LINE_VERTICAL = 1,           -- Layout is defined by a vertical line with faces
+        CUBEMAP_LAYOUT_LINE_HORIZONTAL = 2,         -- Layout is defined by a horizontal line with faces
+        CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR = 3,     -- Layout is defined by a 3x4 cross with cubemap faces
+        CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE = 4      -- Layout is defined by a 4x3 cross with cubemap faces
+    },
+
+    FontType = {
+        FONT_DEFAULT = 0,                   -- Default font generation, anti-aliased
+        FONT_BITMAP = 1,                    -- Bitmap font generation, no anti-aliasing
+        FONT_SDF = 2                        -- SDF font generation, requires external shader
+    },
+
+    BlendMode = {
+        BLEND_ALPHA = 0,                    -- Blend textures considering alpha (default)
+        BLEND_ADDITIVE = 1,                 -- Blend textures adding colors
+        BLEND_MULTIPLIED = 2,               -- Blend textures multiplying colors
+        BLEND_ADD_COLORS = 3,               -- Blend textures adding colors (alternative)
+        BLEND_SUBTRACT_COLORS = 4,          -- Blend textures subtracting colors (alternative)
+        BLEND_ALPHA_PREMULTIPLY = 5,        -- Blend premultiplied textures considering alpha
+        BLEND_CUSTOM = 6,                   -- Blend textures using custom src/dst factors (use rlSetBlendFactors())
+        BLEND_CUSTOM_SEPARATE = 7           -- Blend textures using custom rgb/alpha separate src/dst factors (use rlSetBlendFactorsSeparate())
+    },
+
+    Gesture = {
+        GESTURE_NONE        = 0,        -- No gesture
+        GESTURE_TAP         = 1,        -- Tap gesture
+        GESTURE_DOUBLETAP   = 2,        -- Double tap gesture
+        GESTURE_HOLD        = 4,        -- Hold gesture
+        GESTURE_DRAG        = 8,        -- Drag gesture
+        GESTURE_SWIPE_RIGHT = 16,       -- Swipe right gesture
+        GESTURE_SWIPE_LEFT  = 32,       -- Swipe left gesture
+        GESTURE_SWIPE_UP    = 64,       -- Swipe up gesture
+        GESTURE_SWIPE_DOWN  = 128,      -- Swipe down gesture
+        GESTURE_PINCH_IN    = 256,      -- Pinch in gesture
+        GESTURE_PINCH_OUT   = 512       -- Pinch out gesture
+    },
+
     CameraMode = {
         CAMERA_CUSTOM       = 0,          -- Camera custom, controlled by user (UpdateCamera() does nothing)
         CAMERA_FREE         = 1,          -- Camera free mode
@@ -601,6 +754,12 @@ local export = {
     CameraProjection = {
         CAMERA_PERSPECTIVE  = 0,          -- Perspective projection
         CAMERA_ORTHOGRAPHIC = 1           -- Orthographic projection
+    },
+
+    NPatchLayout = {
+        NPATCH_NINE_PATCH = 0,              -- Npatch layout: 3x3 tiles
+        NPATCH_THREE_PATCH_VERTICAL = 1,    -- Npatch layout: 1x3 tiles
+        NPATCH_THREE_PATCH_HORIZONTAL = 2   -- Npatch layout: 3x1 tiles
     },
 }
 
