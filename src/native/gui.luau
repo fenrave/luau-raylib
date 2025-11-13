@@ -20,6 +20,10 @@ type long = buffer
 type double = number
 type cstring = string | buffer | FFIPointer;
 local Vector2 = structs.Vector2
+local Vector3 = structs.Vector3
+local Rectangle = raylib.structs.Rectangle
+local Color = raylib.structs.Color
+local Font = raylib.structs.Font
 
 type Rectangle = typeof(structs.Rectangle:new({}))
 
@@ -35,7 +39,7 @@ local function fn(returns: any, args: { any })
     };
 end
 
-type fns = {
+export type Fns = {
     GuiEnable: () -> (),
     GuiDisable: () -> (),
     GuiLock: () -> (),
@@ -45,7 +49,7 @@ type fns = {
     GuiSetState: (state: int) -> (),
     GuiGetState: () -> int,
 
-    GuiSetfont: (font: font) -> (),
+    GuiSetFont: (font: font) -> (),
     GuiGetFont: () -> int,
 
     GuiSetStyle: (control: int, property: int, value: int) -> (),
@@ -54,7 +58,7 @@ type fns = {
     GuiLoadStyle: (fileName: cstring) -> (),
     GuiLoadStyleDefault: () -> (),
 
-    GuiEnableToolTip: () -> (),
+    GuiEnableTooltip: () -> (),
     GuiDisableTooltip: () -> (),
     GuiSetTooltip: (tooltip: cstring) -> (),
 
@@ -113,6 +117,71 @@ return {
         GuiEnable = fn(void, {void}),
         GuiDisable = fn(void, {void}),
         GuiLock = fn(void, {void}),
-        GuiUnlock = fn(void, {void})
-    } :: fns
+        GuiUnlock = fn(void, {void}),
+        GuiIsLocked = fn(void, {void}),
+        GuiSetAlpha = fn(void, {float}),
+        GuiSetState = fn(void, {int}),
+        GuiGetState = fn(int, {void}),
+        
+        GuiSetFont = fn(void, {Font}),
+        GuiGetFont = fn(int, {void}),
+
+        GuiSetStyle = fn(void, {int, int, int}),
+        GuiGetStyle = fn(int, {int, int}),
+
+        GuiLoadStyle = fn(void, {cstring}),
+        GuiLoadStyleDefault = fn(void, {void}),
+
+        GuiEnableTooltip = fn(void, {void}),
+        GuiDisableTooltip = fn(void, {void}),
+        GuiSetTooltip = fn(void, {cstring}),
+
+        GuiIconText = fn(cstring, {int, cstring}),
+        GuiSetIconScale = fn(void, {int}),
+        GuiGetIcons = fn(uint, {void}),
+        GuiLoadIcons = fn(cstring, {cstring, bool}),
+        GuiDrawIcons = fn(void, {int, int, int, int, Color}),
+        GuiGetTextWidth = fn(int, {cstring}),
+
+        GuiWindowBox = fn(int, {Rectangle, cstring}),
+        GuiGroupBox = fn(int, {Rectangle, cstring}),
+        GuiLine = fn(int, {Rectangle, cstring}),
+        GuiPanel = fn(int, {Rectangle, cstring}),
+        GuiTabBar = fn(int, {Rectangle, cstring, int, ffi.types.pointer}),
+        GuiScrollPanel = fn(int, {Rectangle, cstring, Rectangle, Vector2, Rectangle}),
+
+        GuiLabel = fn(int, {Rectangle, cstring}),
+        GuiButton = fn(int, {Rectangle, cstring}),
+        GuiLabelButton = fn(int, {Rectangle, cstring}),
+        GuiToggle = fn(int, {Rectangle, cstring, bool}),
+        GuiToggleGroup = fn(int, {Rectangle, cstring, int}),
+        GuiToggleSlider = fn(int, {Rectangle, cstring, int}),
+        GuiCheckBox = fn(int, {Rectangle, cstring, bool}),
+        GuiComboBox = fn(int, {Rectangle, cstring, int}),
+
+        GuiDropDownBox = fn(int, {Rectangle, cstring, int, bool}),
+        GuiSpinner = fn(int, {Rectangle, cstring, int, int, int, bool}),
+        GuiValueBox = fn(int, {Rectangle, cstring, int, int, int, bool}),
+        GuiValueBoxFloat = fn(int,{Rectangle, cstring, cstring, float, bool}),
+        GuiTextBox = fn(int, {Rectangle, cstring, int, bool}),
+
+        GuiSlider = fn(int, {Rectangle, cstring, cstring, float, float, float}),
+        GuiSliderBar = fn(int, {Rectangle, cstring, cstring, float, float, float}),
+        GuiProgressBar = fn(int, {Rectangle, cstring, cstring, float, float, float}),
+        GuiStatusBar = fn(int, {Rectangle, cstring}),
+        GuiDummyRec = fn(int, {Rectangle, cstring}),
+        GuiGrid = fn(int, {Rectangle, text, float, int, Vector2}),
+
+        GuiListView = fn(int, {Rectangle, cstring, int, int}),
+        GuiListviewEx = fn(int, {Rectangle, cstring, int, int, int, int}),
+        GuiMessageBox = fn(int, {Rectangle, cstring, cstring, cstring}),
+        GuiTextInputBox = fn(int, {Rectangle, cstring, cstring, cstring, cstring, int, bool}),
+        GuiColorPicker = fn(int, {Rectangle, cstring, Color}),
+        GuiColorPanel = fn(int, {Rectangle, cstring, Color}),
+        GuiColorBarAlpha = fn(int, {Rectangle, cstring, float}),
+        GuiColorBarHue = fn(int, {Rectangle, cstring, float}),
+        GuiColorPickerHSV = fn(int, {Rectangle, cstring, Vector3}),
+        GuiColorPanelHSV = fn(int, {Rectangle, cstring, Vector3})
+
+    } :: Fns
 }
