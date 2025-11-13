@@ -251,7 +251,7 @@ export type Fns = {
     GetGesturePinchVector: () -> Vector2,
     GetGesturePinchAngle: () -> float,
     UpdateCamera: (camera: FFIPointer, mode: int) -> (),
-    UpdateCameraPro: (camera: FFIPointer, movement: Vector3, rotation: Vector3, zoom: float) -> (),
+    UpdateCameraPro: (camera: FFIPointer, movement: Vector3, rotation: Vector3, zoom: float) -> ()
 };
 
 return {
@@ -692,6 +692,7 @@ return {
         -- void UpdateCamera(Camera *camera, int mode);
         UpdateCamera = fn(void, { raylib.ptrs.Camera, int }),
         -- void UpdateCameraPro(Camera *camera, Vector3 movement, Vector3 rotation, float zoom);
-        UpdateCameraPro = fn(void, { raylib.ptrs.Camera, Vector3, Vector3, float }),
+        UpdateCameraPro = fn(void, { raylib.ptrs.Camera, Vector3, Vector3, float })
+
     }
 }
