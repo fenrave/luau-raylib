@@ -25,7 +25,7 @@ local function main(): ()
     
     lib.InitWindow(1000, 600, "Shader Test")
     lib.SetWindowMonitor(0)
-    
+    lib.GuiEnable()
 
     local Texture: raylib.Texture2D = lib.LoadTexture("examples/resources/space.png")
 

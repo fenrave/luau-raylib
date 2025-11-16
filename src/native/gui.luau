@@ -21,9 +21,9 @@ type double = number
 type cstring = string | buffer | FFIPointer;
 local Vector2 = structs.Vector2
 local Vector3 = structs.Vector3
-local Rectangle = raylib.structs.Rectangle
-local Color = raylib.structs.Color
-local Font = raylib.structs.Font
+local Rectangle = structs.Rectangle
+local Color = structs.Color
+local Font = structs.Font
 
 type Rectangle = typeof(structs.Rectangle:new({}))
 
@@ -85,7 +85,7 @@ export type Fns = {
     GuiCheckBox: (bounds: Rectangle, text: cstring, checked: bool) -> int,
     GuiComboBox: (bounds: Rectangle, text: cstring, active: int) -> int,
 
-    GuiDropDownBox: (bounds: Rectangle, text: cstring, active: int, editMode: bool) -> int,
+    GuiDropdownBox: (bounds: Rectangle, text: cstring, active: int, editMode: bool) -> int,
     GuiSpinner: (bounds: Rectangle, text: cstring, value: int, minValue: int, maxValue: int, editMode: bool) -> int,
     GuiValueBox: (bounds: Rectangle, text: cstring, value: int, minValue: int, maxValue: int, editMode: bool) -> int,
     GuiValueBoxFloat: (bounds: Rectangle, text: cstring, textValue: cstring, value: float, editMode: bool) -> int,
@@ -99,7 +99,7 @@ export type Fns = {
     GuiGrid: (bounds: Rectangle, text: cstring, spacing: float, subdivs: int, mouseCell: Vector2) -> int,
 
     GuiListView: (bounds: Rectangle, text: cstring, scrollIndex: int, active: int) -> int,
-    GuiListviewEx: (bounds: Rectangle, text: cstring, count: int, scrollIndex: int, active: int, focus: int) -> int,
+    GuiListViewEx: (bounds: Rectangle, text: cstring, count: int, scrollIndex: int, active: int, focus: int) -> int,
     GuiMessageBox: (bounds: Rectangle, title: cstring, message: cstring, buttons: cstring) -> int,
     GuiTextInputBox: (bounds: Rectangle, title: cstring, message: cstring, buttons: cstring, text: cstring, textMaxSize: int, secretViewActive: bool) -> int,
     GuiColorPicker: (bounds: Rectangle, text: cstring, color: Color) -> int,
@@ -137,10 +137,10 @@ return {
         GuiSetTooltip = fn(void, {cstring}),
 
         GuiIconText = fn(cstring, {int, cstring}),
-        GuiSetIconScale = fn(void, {int}),
-        GuiGetIcons = fn(uint, {}),
-        GuiLoadIcons = fn(cstring, {cstring, bool}),
-        GuiDrawIcons = fn(void, {int, int, int, int, Color}),
+        -- GuiSetIconScale = fn(void, {int}),
+        -- GuiGetIcons = fn(uint, {}),
+        -- GuiLoadIcons = fn(cstring, {cstring, bool}),
+        -- GuiDrawIcons = fn(void, {int, int, int, int, Color}),
         GuiGetTextWidth = fn(int, {cstring}),
 
         GuiWindowBox = fn(int, {Rectangle, cstring}),
@@ -159,10 +159,10 @@ return {
         GuiCheckBox = fn(int, {Rectangle, cstring, bool}),
         GuiComboBox = fn(int, {Rectangle, cstring, int}),
 
-        GuiDropDownBox = fn(int, {Rectangle, cstring, int, bool}),
+        GuiDropdownBox = fn(int, {Rectangle, cstring, int, bool}),
         GuiSpinner = fn(int, {Rectangle, cstring, int, int, int, bool}),
         GuiValueBox = fn(int, {Rectangle, cstring, int, int, int, bool}),
-        GuiValueBoxFloat = fn(int,{Rectangle, cstring, cstring, float, bool}),
+        GuiValueBoxFloat = fn(int, {Rectangle, cstring, cstring, float, bool}),
         GuiTextBox = fn(int, {Rectangle, cstring, int, bool}),
 
         GuiSlider = fn(int, {Rectangle, cstring, cstring, float, float, float}),
@@ -170,10 +170,10 @@ return {
         GuiProgressBar = fn(int, {Rectangle, cstring, cstring, float, float, float}),
         GuiStatusBar = fn(int, {Rectangle, cstring}),
         GuiDummyRec = fn(int, {Rectangle, cstring}),
-        GuiGrid = fn(int, {Rectangle, text, float, int, Vector2}),
+        GuiGrid = fn(int, {Rectangle, cstring, float, int, Vector2}),
 
         GuiListView = fn(int, {Rectangle, cstring, int, int}),
-        GuiListviewEx = fn(int, {Rectangle, cstring, int, int, int, int}),
+        GuiListViewEx = fn(int, {Rectangle, cstring, int, int, int, int}),
         GuiMessageBox = fn(int, {Rectangle, cstring, cstring, cstring}),
         GuiTextInputBox = fn(int, {Rectangle, cstring, cstring, cstring, cstring, int, bool}),
         GuiColorPicker = fn(int, {Rectangle, cstring, Color}),
