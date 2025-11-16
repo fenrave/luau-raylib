@@ -114,31 +114,31 @@ export type Fns = {
 
 return {
     def = {
-        GuiEnable = fn(void, {void}),
-        GuiDisable = fn(void, {void}),
-        GuiLock = fn(void, {void}),
-        GuiUnlock = fn(void, {void}),
-        GuiIsLocked = fn(void, {void}),
+        GuiEnable = fn(void, {}),
+        GuiDisable = fn(void, {}),
+        GuiLock = fn(void, {}),
+        GuiUnlock = fn(void, {}),
+        GuiIsLocked = fn(void, {}),
         GuiSetAlpha = fn(void, {float}),
         GuiSetState = fn(void, {int}),
-        GuiGetState = fn(int, {void}),
+        GuiGetState = fn(int, {}),
         
         GuiSetFont = fn(void, {Font}),
-        GuiGetFont = fn(int, {void}),
+        GuiGetFont = fn(int, {}),
 
         GuiSetStyle = fn(void, {int, int, int}),
         GuiGetStyle = fn(int, {int, int}),
 
         GuiLoadStyle = fn(void, {cstring}),
-        GuiLoadStyleDefault = fn(void, {void}),
+        GuiLoadStyleDefault = fn(void, {}),
 
-        GuiEnableTooltip = fn(void, {void}),
-        GuiDisableTooltip = fn(void, {void}),
+        GuiEnableTooltip = fn(void, {}),
+        GuiDisableTooltip = fn(void, {}),
         GuiSetTooltip = fn(void, {cstring}),
 
         GuiIconText = fn(cstring, {int, cstring}),
         GuiSetIconScale = fn(void, {int}),
-        GuiGetIcons = fn(uint, {void}),
+        GuiGetIcons = fn(uint, {}),
         GuiLoadIcons = fn(cstring, {cstring, bool}),
         GuiDrawIcons = fn(void, {int, int, int, int, Color}),
         GuiGetTextWidth = fn(int, {cstring}),
