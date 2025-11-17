@@ -183,5 +183,5 @@ return {
         GuiColorPickerHSV = fn(int, {Rectangle, cstring, Vector3}),
         GuiColorPanelHSV = fn(int, {Rectangle, cstring, Vector3})
 
-    } :: Fns
+    }
 }
